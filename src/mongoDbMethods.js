@@ -201,6 +201,21 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
     offset = offset || 0
     limit = limit || 100
 
+
+     try{
+        offset = Number(offset)
+    } catch {
+        offset = 0
+    }
+
+
+    try{
+        limit = Number(limit)
+    } catch {
+        limit =100
+    }
+
+
     for (let k of Object.keys(filter)) {
         filter['data.' + k] = filter[k]
         delete filter[k]
