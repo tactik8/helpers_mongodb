@@ -1,11 +1,11 @@
 import * as helpers from 'jsonld_helpers'
 import { MongoClient } from 'mongodb'
+import { v4 as uuidv4 } from 'uuid';
 
 
 let uri = 'mongodb://tactik8:Temp4now@192.168.2.243:27017/?authMechanism=DEFAULT'
 
-//const client = new MongoClient(uri);
-//await client.connect();
+
 
 
 export async function getCollections(client, databaseID){

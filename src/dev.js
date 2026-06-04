@@ -20,7 +20,6 @@ export async function test() {
     // init db
     let a_init = await db.init()
 
-    console.log('a', a_init.actionStatus )
     if(a_init.isCompleted == false){
         console.log('Error init')
     }
@@ -63,5 +62,5 @@ export async function testCollection(){
 }
 
 
-// test()
-testCollection()
+test()
+// testCollection()
