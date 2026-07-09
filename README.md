@@ -8,13 +8,13 @@
 
 
 ```
-npm install github:tactik8/mongodb_helpers
+npm install github:tactik8/helpers_mongodb
 
 ```
 
 
 ```
-import { MongoDB } from "mongodb_helpers"
+import { MongoDB } from "helpers_mongodb"
 
 let db = new MongoDB()
 
@@ -32,8 +32,9 @@ npx nodemon mongodb_v1/src/index.js
 
 # Installation
 ```
-npm install github:tactik8/jsonldHelpers_v1
+npm install github:tactik8/helpers_mongodb
 ```
+
 
 
 
