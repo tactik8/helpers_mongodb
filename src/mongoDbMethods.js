@@ -1,4 +1,4 @@
-import * as helpers from 'jsonld_helpers'
+import * as helpers from 'helpers_jsonld'
 import { MongoClient } from 'mongodb'
 import { v4 as uuidv4 } from 'uuid';
 
