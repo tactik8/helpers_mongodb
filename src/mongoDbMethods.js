@@ -48,7 +48,6 @@ export async function getCollections(client, databaseID){
 export async function dbGetNested(client, databaseID, tenantID, records) {
 
     let action = new helpers.Action("MongoDB Get nested", records)
-    // console.log(action.toString())
 
     let initialIDs = []
     let fetchedIDs = []         // ids already fetched
@@ -66,17 +65,14 @@ export async function dbGetNested(client, databaseID, tenantID, records) {
 
         while (toFetchIDs.length > 0) {
 
-            console.log('toFetch',toFetchIDs )
             let a = await dbGet(client, databaseID, tenantID, toFetchIDs, false)
             let dbRecords = a.result
             dbRecords = Array.isArray(dbRecords) ? dbRecords : [dbRecords]
             dbRecords = dbRecords.map(x => x?.record || x)
 
-
             // Add records to recordsDB
             recordsDB.post(dbRecords)
 
-            console.log('rrr', records.length)
             // add ids to fetch to already fetched
             fetchedIDs = fetchedIDs.concat(toFetchIDs)
 
@@ -92,13 +88,11 @@ export async function dbGetNested(client, databaseID, tenantID, records) {
 
 
         action.setCompleted(results)
-        // console.log(action.toString())
         return action?.record || action
 
 
     } catch (err) {
         action.setFailed(String(err))
-        console.log(action.toString(), err)
         return action?.record || action
     }
 }
@@ -118,12 +112,10 @@ export async function dbInit(uri) {
         let k = await client.connect();
 
         action.setCompleted(client)
-        // console.log(action.toString())
         return action
 
     } catch (err) {
         action.setFailed(String(err))
-        // console.log(action.toString())
         return action
     }
 
@@ -134,11 +126,11 @@ export async function dbInit(uri) {
 export async function dbInsert(client, databaseID, tenantID, records) {
 
 
+
     // init action
     const r = structuredClone(records);
 
     let action = new helpers.Action('MongoDB Insert', r)
-    // console.log(action.toString())
 
     tenantID = tenantID || 'test'
 
@@ -150,7 +142,9 @@ export async function dbInsert(client, databaseID, tenantID, records) {
 
     db.post(records)
 
+
     records = db.getRecords(false)
+
 
 
     records = records.map(x => x?.record || x)
@@ -186,7 +180,6 @@ export async function dbInsert(client, databaseID, tenantID, records) {
         let r = await collection.bulkWrite(queries)
 
         action.setCompleted(r)
-        // console.log(action.toString())
         return action
 
     } catch (err) {
@@ -204,7 +197,6 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
 
     // init action
     let action = new helpers.Action('MongoDB Search', filter)
-    // console.log(action.toString())
 
     tenantID = tenantID || 'test'
     filter = filter || {}
@@ -253,14 +245,11 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
 
 
         action.setCompleted(records)
-        // console.log(action.toString())
         return action
 
 
     } catch (err) {
-        // console.log('err', err)
         action.setFailed(String(err))
-        // console.log(action.toString())
         return action
     }
 
@@ -273,7 +262,6 @@ export async function dbGet(client, databaseID, tenantID, record_ids, expand = t
 
     // init action
     let action = new helpers.Action('MongoDB Get', record_ids)
-    // console.log(action.toString())
 
 
     tenantID = tenantID || 'test'
@@ -300,10 +288,9 @@ export async function dbGet(client, databaseID, tenantID, record_ids, expand = t
 
         // Expand
         if (expand == true) {
-            records = await dbGetNested(client, databaseID, tenantID, records)
-            records = records.map(x => x?.result )
+            let a = await dbGetNested(client, databaseID, tenantID, records)
+            records = a?.result
         }
-        console.log('r', JSON.stringify(records, null, 4))
 
         action.setCompleted(records)
         return action?.record 
@@ -312,9 +299,7 @@ export async function dbGet(client, databaseID, tenantID, record_ids, expand = t
 
 
     } catch (err) {
-        // console.log('err', err)
         action.setFailed(String(err))
-        // console.log(action.toString())
         return action
     }
 
@@ -326,7 +311,6 @@ export async function dbDelete(client, databaseID, tenantID, filter) {
 
     // init action
     let action = new helpers.Action('MongoDB Delete', filter)
-    // console.log(action.toString())
 
     filter = filter || {}
     for (let k of Object.keys(filter)) {
@@ -342,13 +326,11 @@ export async function dbDelete(client, databaseID, tenantID, filter) {
         let records = await collection.deleteMany(filter);
 
         action.setCompleted()
-        // console.log(action.toString())
         return action
 
 
     } catch (err) {
         action.setFailed(String(err))
-        // console.log(action.toString())
         return action
     }
 

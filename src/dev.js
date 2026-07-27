@@ -50,7 +50,6 @@ export async function test() {
 
     l = helpers.things.ItemList.append(l, t)
 
-    console.log('ll', JSON.stringify(l, null, 4))
 
     await db.post(l)
 
