@@ -63,15 +63,20 @@ export async function dbGetNested(client, databaseID, tenantID, records) {
         toFetchIDs = toFetchIDs.concat(initialIDs)
 
 
+
         while (toFetchIDs.length > 0) {
 
+            console.log('toFetch',toFetchIDs )
             let a = await dbGet(client, databaseID, tenantID, toFetchIDs, false)
             let dbRecords = a.result
+            dbRecords = Array.isArray(dbRecords) ? dbRecords : [dbRecords]
+            dbRecords = dbRecords.map(x => x?.record || x)
 
 
             // Add records to recordsDB
             recordsDB.post(dbRecords)
 
+            console.log('rrr', records.length)
             // add ids to fetch to already fetched
             fetchedIDs = fetchedIDs.concat(toFetchIDs)
 
@@ -88,13 +93,13 @@ export async function dbGetNested(client, databaseID, tenantID, records) {
 
         action.setCompleted(results)
         // console.log(action.toString())
-        return action
+        return action?.record || action
 
 
     } catch (err) {
         action.setFailed(String(err))
-        // console.log(action.toString())
-        return action
+        console.log(action.toString(), err)
+        return action?.record || action
     }
 }
 
@@ -296,13 +301,12 @@ export async function dbGet(client, databaseID, tenantID, record_ids, expand = t
         // Expand
         if (expand == true) {
             records = await dbGetNested(client, databaseID, tenantID, records)
-            records = records?.result
+            records = records.map(x => x?.result )
         }
-
+        console.log('r', JSON.stringify(records, null, 4))
 
         action.setCompleted(records)
-        // console.log(action.toString())
-        return action
+        return action?.record 
 
 
 

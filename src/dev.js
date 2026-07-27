@@ -57,9 +57,8 @@ export async function test() {
 
     let action = await db.get("https://www.test.com/listRecord4")
 
-    console.log('a', action.result)
+    console.log('a', action)
 
-    console.log('pp')
 
 
     return
