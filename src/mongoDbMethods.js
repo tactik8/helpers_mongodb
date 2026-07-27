@@ -137,9 +137,12 @@ export async function dbInsert(client, databaseID, tenantID, records) {
 
     let db = new helpers.DB()
 
+
     db.post(records)
 
     records = db.getRecords()
+
+    records = records.map(x => x?.record || x)
 
     // Retrieve
     let queries = []
