@@ -56,7 +56,7 @@ export async function test() {
 
     let action = await db.get("https://www.test.com/listRecord3")
 
-    console.log('a', action)
+    console.log('a', JSON.stringify(action, null, 4))
 
 
 
