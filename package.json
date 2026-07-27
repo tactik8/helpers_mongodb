@@ -1,6 +1,6 @@
 {
   "name": "helpers_mongodb",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "MongoDB client",
   "license": "ISC",
   "author": "",
@@ -26,8 +26,6 @@
   },
   "dependencies": {
     "helpers_jsonld": "github:tactik8/helpers_jsonld",
-    "jest": "^30.4.2",
-    "jsonld_helpers": "github:tactik8/helpers_jsonld",
     "mongodb": "^7.2.0"
   }
 }

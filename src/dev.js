@@ -39,7 +39,7 @@ export async function test() {
 
     let l = {
         "@type": "ItemList",
-        "@id": "https://www.test.com/listRecord4"
+        "@id": "https://www.test.com/listRecord3"
     }
 
     let t = {
@@ -51,10 +51,10 @@ export async function test() {
     l = helpers.things.ItemList.append(l, t)
 
 
-    await db.post(l)
+    //await db.post(l)
 
 
-    let action = await db.get("https://www.test.com/listRecord4")
+    let action = await db.get("https://www.test.com/listRecord3")
 
     console.log('a', action)
 
