@@ -2,7 +2,6 @@ import { MongoClient } from 'mongodb'
 
 import * as helpers from 'helpers_jsonld'
 
-import { v4 as uuidv4 } from 'uuid';
 
 import * as m from './mongoDbMethods.js'
 
@@ -24,7 +23,6 @@ export class MongoDB {
         this._uri = uri
         this.tenantID = tenantID
         this.databaseID = databaseID
-
 
         this._client = undefined
         this._dbInitializedFlag = false
