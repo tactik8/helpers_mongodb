@@ -32,34 +32,20 @@ export async function test() {
     let offset = undefined
 
 
-    let action = await db.search(filter, orderBy, orderDirection, limit, offset)
 
 
+    let action = await db.get("https://www.test.com/listRecord3")
+
+    console.log('a', action.result)
+
+    console.log('pp')
 
 
+    return
 
 
 }
 
-
-export async function testCollection(){
-
- let db = new MongoDB()
-    db.uri = URI
-
-    db.databaseID = "n8n"
-    db.tenantID = "test"
-
-
-    // init db
-    let a_init = await db.init()
-
-
-    let c = await db.getCollections()
-
-    console.log('c', JSON.stringify(c, null, 4))
-
-}
 
 
 test()

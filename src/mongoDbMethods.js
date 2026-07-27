@@ -48,7 +48,7 @@ export async function getCollections(client, databaseID){
 export async function dbGetNested(client, databaseID, tenantID, records) {
 
     let action = new helpers.Action("MongoDB Get nested", records)
-    console.log(action.toString())
+    // console.log(action.toString())
 
     let initialIDs = []
     let fetchedIDs = []         // ids already fetched
@@ -87,13 +87,13 @@ export async function dbGetNested(client, databaseID, tenantID, records) {
 
 
         action.setCompleted(results)
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
 
 
     } catch (err) {
         action.setFailed(String(err))
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
     }
 }
@@ -113,12 +113,12 @@ export async function dbInit(uri) {
         let k = await client.connect();
 
         action.setCompleted(client)
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
 
     } catch (err) {
         action.setFailed(String(err))
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
     }
 
@@ -131,7 +131,7 @@ export async function dbInsert(client, databaseID, tenantID, records) {
 
     // init action
     let action = new helpers.Action('MongoDB Insert', records)
-    console.log(action.toString())
+    // console.log(action.toString())
 
     tenantID = tenantID || 'test'
 
@@ -172,12 +172,12 @@ export async function dbInsert(client, databaseID, tenantID, records) {
         let r = await collection.bulkWrite(queries)
 
         action.setCompleted(r)
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
 
     } catch (err) {
         action.setFailed(String(err))
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
     }
 
@@ -191,7 +191,7 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
 
     // init action
     let action = new helpers.Action('MongoDB Search', filter)
-    console.log(action.toString())
+    // console.log(action.toString())
 
     tenantID = tenantID || 'test'
     filter = filter || {}
@@ -240,14 +240,14 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
 
 
         action.setCompleted(records)
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
 
 
     } catch (err) {
-        console.log('err', err)
+        // console.log('err', err)
         action.setFailed(String(err))
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
     }
 
@@ -260,7 +260,7 @@ export async function dbGet(client, databaseID, tenantID, record_ids, expand = t
 
     // init action
     let action = new helpers.Action('MongoDB Get', record_ids)
-    console.log(action.toString())
+    // console.log(action.toString())
 
 
     tenantID = tenantID || 'test'
@@ -293,16 +293,16 @@ export async function dbGet(client, databaseID, tenantID, record_ids, expand = t
 
 
         action.setCompleted(records)
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
 
 
 
 
     } catch (err) {
-        console.log('err', err)
+        // console.log('err', err)
         action.setFailed(String(err))
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
     }
 
@@ -314,7 +314,7 @@ export async function dbDelete(client, databaseID, tenantID, filter) {
 
     // init action
     let action = new helpers.Action('MongoDB Delete', filter)
-    console.log(action.toString())
+    // console.log(action.toString())
 
     filter = filter || {}
     for (let k of Object.keys(filter)) {
@@ -330,13 +330,13 @@ export async function dbDelete(client, databaseID, tenantID, filter) {
         let records = await collection.deleteMany(filter);
 
         action.setCompleted()
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
 
 
     } catch (err) {
         action.setFailed(String(err))
-        console.log(action.toString())
+        // console.log(action.toString())
         return action
     }
 
