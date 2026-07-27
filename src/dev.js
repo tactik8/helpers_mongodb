@@ -1,4 +1,5 @@
 import { MongoDB } from './mongodb.js'
+import * as helpers from 'jsonld_helpers'
 
 let URI = 'mongodb://tactik8:Temp4now@192.168.2.243:27017/?authMechanism=DEFAULT'
 
@@ -25,6 +26,9 @@ export async function test() {
     }
 
 
+
+
+
     let filter = undefined
     let orderBy = undefined
     let orderDirection = undefined
@@ -33,8 +37,25 @@ export async function test() {
 
 
 
+    let l = {
+        "@type": "ItemList",
+        "@id": "https://www.test.com/listRecord4"
+    }
 
-    let action = await db.get("https://www.test.com/listRecord3")
+    let t = {
+        "@type": "Thing",
+        "@id": "https://www.test.com/thing1",
+        "name": "thing1"
+    }
+
+    l = helpers.things.ItemList.append(l, t)
+
+    console.log('ll', JSON.stringify(l, null, 4))
+
+    await db.post(l)
+
+
+    let action = await db.get("https://www.test.com/listRecord4")
 
     console.log('a', action.result)
 

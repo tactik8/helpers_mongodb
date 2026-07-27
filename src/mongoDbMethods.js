@@ -130,7 +130,9 @@ export async function dbInsert(client, databaseID, tenantID, records) {
 
 
     // init action
-    let action = new helpers.Action('MongoDB Insert', records)
+    const r = structuredClone(original);
+
+    let action = new helpers.Action('MongoDB Insert', r)
     // console.log(action.toString())
 
     tenantID = tenantID || 'test'
