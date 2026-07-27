@@ -1,5 +1,5 @@
 
-import * as helpers from 'jsonld_helpers'
+import * as helpers from 'helpers_jsonld'
 
 import * as mongodb from './mongodb.js'
 export * from './mongodb.js'

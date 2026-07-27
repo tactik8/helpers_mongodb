@@ -130,7 +130,7 @@ export async function dbInsert(client, databaseID, tenantID, records) {
 
 
     // init action
-    const r = structuredClone(original);
+    const r = structuredClone(records);
 
     let action = new helpers.Action('MongoDB Insert', r)
     // console.log(action.toString())
@@ -145,7 +145,8 @@ export async function dbInsert(client, databaseID, tenantID, records) {
 
     db.post(records)
 
-    records = db.getRecords()
+    records = db.getRecords(false)
+
 
     records = records.map(x => x?.record || x)
 
@@ -185,7 +186,6 @@ export async function dbInsert(client, databaseID, tenantID, records) {
 
     } catch (err) {
         action.setFailed(String(err))
-        // console.log(action.toString())
         return action
     }
 
