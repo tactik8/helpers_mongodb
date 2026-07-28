@@ -133,6 +133,11 @@ export async function executeAction(client, databaseID, tenantID, actionRecord) 
         return await executeReplaceAction(client, databaseID, tenantID, actionRecord)
     }
 
+     if (record_type == "DuplicateAction") {
+        return await executeDuplicateAction(client, databaseID, tenantID, actionRecord)
+    }
+
+
 }
 
 
@@ -254,6 +259,34 @@ export async function executeReplaceAction(client, databaseID, tenantID, actionR
 
     // helpers
     itemListRecord = helpers.ItemList.replace(itemListRecord, replacer, replacee)
+
+    // Save itemList
+    let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
+
+    // Complete action and return
+    actionRecord = helpers.Action.setCompleted(itemListRecord)
+
+    return actionRecord
+}
+
+
+export async function executeDuplicateAction(client, databaseID, tenantID, actionRecord) {
+
+
+    // Retrieve itemList record
+    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
+
+    // Get object
+    let objects = helpers.getValues(actionRecord, "object")
+    
+    for(let object of objects){
+        let objectID = helpers.record_id(object)
+        itemListRecord = helpers.ItemList.duplicate(itemListRecord, objectID)
+    }
+
+    
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
