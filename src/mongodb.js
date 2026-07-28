@@ -194,7 +194,7 @@ export async function executeInsertAction(client, databaseID, tenantID, actionRe
     itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
     // Get object
-    let object = helpers.getValues(actionRecord, "object")
+    let objects = helpers.getValues(actionRecord, "object")
 
     // Get location
     let location = helpers.getValue(actionRecord, "toLocation")
@@ -221,12 +221,13 @@ export async function executeDeleteAction(client, databaseID, tenantID, actionRe
 
 
     // Get object id
-    let object = helpers.getValues(actionRecord, "object")
-    let objectID = helpers.record_id(object)
 
-
-    // helpers
-    itemListRecord = helpers.ItemList.delete(itemListRecord, objectID)
+    let objects = helpers.getValues(actionRecord, "object")
+    
+    for(let object of objects){
+        let objectID = helpers.record_id(object)
+        itemListRecord = helpers.ItemList.delete(itemListRecord, objectID)
+    }
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)

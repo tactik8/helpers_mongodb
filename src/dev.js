@@ -88,11 +88,11 @@ async function test2(){
 
     r = await db.search({"@type": "ItemList"})
 
-    console.log(JSON.stringify(r.result, null, 4))
+    //console.log(JSON.stringify(r.result, null, 4))
 
+    let action
 
-
-    let action = {
+    action = {
         "@type": "AppendAction",
         "toCollection": {"@id": "https://www.test.com/listRecord3"},
         "object": {
@@ -107,7 +107,28 @@ async function test2(){
 
     r = await db.search({"@type": "ItemList"})
 
-    console.log(JSON.stringify(r.result, null, 4))
+    console.log(r.result.numberOfItems)
+
+
+    action = {
+        "@type": "DeleteAction",
+        "toCollection": {"@id": "https://www.test.com/listRecord3"},
+        "object": [{
+            "@type": "Thing",
+            "@id": "https://ww.test.com/thing12",
+            "name": "thing12"
+        }]
+    }
+
+    await db.execute(action)
+
+
+    r = await db.search({"@type": "ItemList"})
+
+    console.log(r.result.numberOfItems)
+
+
+
 
     return r
 
