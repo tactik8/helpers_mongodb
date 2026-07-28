@@ -58,51 +58,56 @@ export class MongoDB {
             this._client = initAction.result?.[0]
         }
 
+        // init background healthcheck
+        this.healthCheck()
+
+
+        //
         return initAction
 
     }
 
+    async healthCheck(){
+        return await m.dbHealthCheck(this._client, this.databaseID, this.tenantID) 
+    }
+
+    async getDatabases(){
+        return await m.dbSearchDatabases(this._client, this.databaseID)
+    }
+
+    async createDatabase(){
+        return await m.dbCreateDatabase(this._client, this.databaseID, this.tenantID)
+    }
+
     async getCollections(){
-
         return await m.getCollections(this._client, this.databaseID)
-
     }
 
     async get(record_ids) {
-
-
         return await m.dbGet(this._client, this.databaseID, this.tenantID, record_ids, true)
-
     }
 
     async search(filter, orderBy, orderDirection, limit, offset) {
-
         return await m.dbSearch(this._client, this.databaseID, this.tenantID, filter, orderBy, orderDirection, limit, offset, true)
-
     }
 
     async post(record) {
-
         return await m.dbInsert(this._client, this.databaseID, this.tenantID, record)
-
     }
 
     async delete(filter) {
         return await m.dbDelete(this._client, this.databaseID, this.tenantID, filter)
     }
 
-
     async execute(actionRecord) {
-
-        return await executeAction(actionRecord)
-
+        return await executeAction(this._client, this.databaseID, this.tenantID, actionRecord)
     }
 
 }
 
 
 
-export async function executeAction(actionRecord) {
+export async function executeAction(client, databaseID, tenantID, actionRecord) {
 
 
     
@@ -136,13 +141,12 @@ export async function executeAppendAction(client, databaseID, tenantID, actionRe
 
 
     // Retrieve itemList record
-    let itemlistID = actionRecord?.toCollection || []
-    itemlistID = Array.isArray(itemlistID) ? itemlistID[0] : itemlistID
-
-    let itemListRecord = await m.dbGet(client, databaseID, tenantID, itemlistID)
+    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
     // Add object
-    let object = actionRecord?.object
+    let object = helpers.getValues(actionRecord, "object")
 
     // helpers
     itemListRecord = helpers.ItemList.append(itemListRecord, object)
@@ -161,13 +165,12 @@ export async function executePrependAction(client, databaseID, tenantID, actionR
 
 
     // Retrieve itemList record
-    let itemlistID = actionRecord?.toCollection || []
-    itemlistID = Array.isArray(itemlistID) ? itemlistID[0] : itemlistID
-
-    let itemListRecord = await m.dbGet(client, databaseID, tenantID, itemlistID)
+    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
     // Add object
-    let object = actionRecord?.object
+    let object = helpers.getValues(actionRecord, "object")
 
     // helpers
     itemListRecord = helpers.ItemList.prepend(itemListRecord, object)
@@ -186,18 +189,15 @@ export async function executeInsertAction(client, databaseID, tenantID, actionRe
 
 
     // Retrieve itemList record
-    let itemlistID = actionRecord?.toCollection || []
-    itemlistID = Array.isArray(itemlistID) ? itemlistID[0] : itemlistID
-
-    let itemListRecord = await m.dbGet(client, databaseID, tenantID, itemlistID)
+    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
     // Get object
-    let object = actionRecord?.object
+    let object = helpers.getValues(actionRecord, "object")
 
     // Get location
-    let location = actionRecord?.toLocation
-    location = Array.isArray(location) ? location[0] : location
-
+    let location = helpers.getValue(actionRecord, "toLocation")
 
     // helpers
     itemListRecord = helpers.ItemList.insert(itemListRecord, object, location)
@@ -215,13 +215,14 @@ export async function executeDeleteAction(client, databaseID, tenantID, actionRe
 
 
     // Retrieve itemList record
-    let itemlistID = actionRecord?.toCollection || []
-    itemlistID = Array.isArray(itemlistID) ? itemlistID[0] : itemlistID
+    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
-    let itemListRecord = await m.dbGet(client, databaseID, tenantID, itemlistID)
 
     // Get object id
-    let objectID = actionRecord?.object?.['@id']
+    let object = helpers.getValues(actionRecord, "object")
+    let objectID = helpers.record_id(object)
 
 
     // helpers
@@ -241,14 +242,13 @@ export async function executeReplaceAction(client, databaseID, tenantID, actionR
 
 
     // Retrieve itemList record
-    let itemlistID = actionRecord?.toCollection || []
-    itemlistID = Array.isArray(itemlistID) ? itemlistID[0] : itemlistID
-
-    let itemListRecord = await m.dbGet(client, databaseID, tenantID, itemlistID)
+    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
     // Get object
-    let replacer = actionRecord?.replacer
-    let replacee = actionRecord?.replacee
+    let replacer = getValue(actionRecord, 'replacer')
+    let replacee = getValue(actionRecord, 'replacee')
 
 
     // helpers

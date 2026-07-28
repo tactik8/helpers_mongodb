@@ -7,23 +7,255 @@ let uri = 'mongodb://tactik8:Temp4now@192.168.2.243:27017/?authMechanism=DEFAULT
 
 
 
-export async function getCollections(client, databaseID){
+// -----------------------------------------------------------------
+// Database
+// -----------------------------------------------------------------
+
+export async function dbCreateDatabase(client, databaseID, tenantID) {
+
+
+    let action = new helpers.Action("MongoDB Create database")
+
+    try {
+        // Select the database (MongoDB creates it if it doesn't exist)
+        const db = client.db(databaseID);
+
+        // Select a collection name
+        const collection = db.collection('config');
+
+        // 
+        let data = {
+            "@type": "Dataset",
+            "@id": `https://www.test.com/${databaseID}#dataset`,
+            "name": databaseID,
+            "dateCreated": new Date()
+        }
+
+
+        // Insert at least one document to physically create the database
+        const insertResult = await collection.insertOne(data);
+
+
+        // create index
+        if (tenantID) {
+            let r = await dbCreateIndex(client, databaseID, tenantID)
+        }
+
+
+        action.setCompleted(data)
+
+        return action?.record || action
+
+    } catch (err) {
+        action.setFailed(String(err))
+        return action?.record || action
+
+    }
+}
+
+
+
+
+export async function dbSearchDatabases(client) {
+
+
+    let action = new helpers.Action("MongoDB Get Databases")
+
+    try {
+
+        // Select a collection name
+
+        // Access the administrative interface
+        const adminDb = client.db().admin();
+
+        // Retrieve the list of databases
+        const dbList = await adminDb.listDatabases();
+
+        let databases = []
+        for (let db of dbList.databases) {
+            let r = {
+                "@type": "Dataset",
+                "@id": `https://www.test.com/${db.name}#dataset`,
+                "name": db.name,
+                "tenandID": (await getCollections(client, db.name))?.result || []
+            }
+            databases.push(r)
+        }
+
+
+        // 
+        action.setCompleted(databases)
+
+        return action?.record || action
+
+    } catch (err) {
+        action.setFailed(String(err))
+        return action?.record || action
+
+    }
+}
+
+
+
+export async function dbInit(uri) {
+
+    let action = new helpers.Action('MongoDB Init')
+
+    let client
+    try {
+        client = new MongoClient(uri);
+        let k = await client.connect();
+
+        action.setCompleted(client)
+
+        return action
+
+    } catch (err) {
+        action.setFailed(String(err))
+        return action
+    }
+
+}
+
+
+
+export async function dbHealthCheck(client, databaseID, tenantID) {
+
+    console.log("MongoDB - Starting healthcheck")
+    let action = new helpers.Action("MongoDB Healthcheck")
+    try {
+
+
+
+        // Verify indexes
+        let indexes = (await dbGetIndex(client, databaseID, tenantID))?.result || []
+        indexes = Array.isArray(indexes) ? indexes : [indexes]
+
+        let mainIndex = indexes.find(x => x.propertyID.includes('@id'))
+
+        if (!mainIndex) {
+            let r = await dbCreateIndex(client, databaseID, tenantID)
+            action.hasPart.push(r)
+            action.description = "Index missing, created."
+        } else {
+            action.description = "Index already present."
+        }
+
+        console.log('MongoDB - ', action.description)
+
+        action.setCompleted()
+        return action?.record || action
+
+    } catch (err) {
+        console.log('Error', err)
+        action.setFailed(String(err))
+    }
+
+}
+
+
+// -----------------------------------------------------------------
+// Index
+// -----------------------------------------------------------------
+
+
+
+export async function dbCreateIndex(client, databaseID, tenantID) {
+
+
+    let action = new helpers.Action("MongoDB Create index")
+
+    try {
+
+        await client.connect();
+        const db = client.db(databaseID);
+        const collection = db.collection(tenantID);
+
+        // Fetch all indexes on the specified collection
+        let index1 = await collection.createIndex({ "data.@type": 1 });
+        let index2 = await collection.createIndex({ "data.@id": 1 });
+        let index3 = await collection.createIndex({ "data.actionStatus": 1 });
+        let index4 = await collection.createIndex({ "data.url": 1 });
+
+
+
+        // 
+        action.setCompleted(indexes)
+
+        return action?.record || action
+
+    } catch (err) {
+        action.setFailed(String(err))
+        return action?.record || action
+
+    }
+}
+
+
+export async function dbGetIndex(client, databaseID, tenantID) {
+
+
+    let action = new helpers.Action("MongoDB Get index")
+
+    try {
+
+        await client.connect();
+        const db = client.db(databaseID);
+        const collection = db.collection(tenantID);
+
+        // Fetch all indexes on the specified collection
+        const indexList = await collection.indexes();
+
+
+        let indexes = indexList.map(i => (
+            {
+                "@type": "Index",
+                "@id": `https://www.test.com/${databaseID}/${tenantID}/${i.name}#index`,
+                "name": i.name,
+                "propertyID": Object.keys(i.key),
+                "unique": i?.unique || false
+            }
+        ));
+
+        // 
+        action.setCompleted(indexes)
+
+        return action?.record || action
+
+    } catch (err) {
+        action.setFailed(String(err))
+        return action?.record || action
+
+    }
+}
+
+
+
+
+// -----------------------------------------------------------------
+// Collections
+// -----------------------------------------------------------------
+
+export async function getCollections(client, databaseID) {
 
     let action = new helpers.Action("MongoDB Get Collections")
 
-     try {
+    try {
+
 
         const database = client.db(databaseID);
 
         let collections = await database.listCollections().toArray();
 
         let tenants = []
-        for(let c of collections){
+        for (let c of collections) {
 
             let t = {
                 "@type": "Tenant",
                 "name": c.name,
-                "url": "/" + c.name
+                "url": "/" + c.name,
+                "numberOfitems": await getDocumentCount(client, databaseID, c.name),
+                "indexes": await dbGetIndex(client, databaseID, c.name),
             }
             tenants.push(t)
         }
@@ -31,16 +263,34 @@ export async function getCollections(client, databaseID){
 
         action.setCompleted(tenants)
 
-        return action
+        return action?.record || action
 
 
-     } catch(err){
+    } catch (err) {
 
         action.setFailed('getCollection error: ' + String(err))
 
-        return action
-     }
-    
+        return action?.record || action
+    }
+
+}
+
+
+// -----------------------------------------------------------------
+// Documents
+// -----------------------------------------------------------------
+
+export async function getDocumentCount(client, databaseID, tenantID) {
+
+    const db = client.db(databaseID);
+    const collection = db.collection(tenantID);
+
+
+    // Method 2: Fast, estimated count of the entire collection
+    const totalEstimate = await collection.estimatedDocumentCount();
+
+    return totalEstimate
+
 }
 
 
@@ -98,28 +348,6 @@ export async function dbGetNested(client, databaseID, tenantID, records) {
 }
 
 
-// ---------------------------------------------
-// DB functions
-// ---------------------------------------------
-
-export async function dbInit(uri) {
-
-    let action = new helpers.Action('MongoDB Init')
-
-    let client
-    try {
-        client = new MongoClient(uri);
-        let k = await client.connect();
-
-        action.setCompleted(client)
-        return action
-
-    } catch (err) {
-        action.setFailed(String(err))
-        return action
-    }
-
-}
 
 
 
@@ -137,7 +365,7 @@ export async function dbInsert(client, databaseID, tenantID, records) {
     let db = new helpers.DB()
 
 
-    records = Array.isArray(records)? records : [records]
+    records = Array.isArray(records) ? records : [records]
     records = records.map(x => x?.record || x)
 
     db.post(records)
@@ -153,11 +381,15 @@ export async function dbInsert(client, databaseID, tenantID, records) {
     let queries = []
     for (let r of records) {
 
+     
+ 
         let q = {
             updateOne: {
                 filter: { "data.@id": r?.['@id'] },
                 update: {
                     $set: {
+                        "@type": helpers.record_type(r),
+                        "@id": r?.["@id"],
                         "data": r,
                         "@annotation.dbModifiedDate": new Date()
                     },
@@ -180,14 +412,14 @@ export async function dbInsert(client, databaseID, tenantID, records) {
         let r = await collection.bulkWrite(queries)
 
         action.setCompleted(r)
-        return action
+        return action?.record || action
 
     } catch (err) {
         action.setFailed(String(err))
-        return action
+        return action?.record || action
     }
 
-    return r
+
 
 }
 
@@ -206,17 +438,17 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
     limit = limit || 100
 
 
-     try{
+    try {
         offset = Number(offset)
     } catch {
         offset = 0
     }
 
 
-    try{
+    try {
         limit = Number(limit)
     } catch {
-        limit =100
+        limit = 100
     }
 
 
@@ -245,12 +477,12 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
 
 
         action.setCompleted(records)
-        return action
+        return action?.record || action
 
 
     } catch (err) {
         action.setFailed(String(err))
-        return action
+        return action?.record || action
     }
 
 
@@ -266,7 +498,7 @@ export async function dbGet(client, databaseID, tenantID, record_ids, expand = t
 
     tenantID = tenantID || 'test'
 
-    record_ids = Array.isArray(record_ids)  ? record_ids : [record_ids]
+    record_ids = Array.isArray(record_ids) ? record_ids : [record_ids]
 
     record_ids = record_ids.map(x => x?.["@id"] || x)
 
@@ -282,7 +514,7 @@ export async function dbGet(client, databaseID, tenantID, record_ids, expand = t
 
         let records = await collection.find(query).toArray();
 
-        
+
         // Clean records
         records = _cleanMongoRecord(records)
 
@@ -293,14 +525,14 @@ export async function dbGet(client, databaseID, tenantID, record_ids, expand = t
         }
 
         action.setCompleted(records)
-        return action?.record 
+        return action?.record || action
 
 
 
 
     } catch (err) {
         action.setFailed(String(err))
-        return action
+        return action?.record || action
     }
 
 }
@@ -326,12 +558,12 @@ export async function dbDelete(client, databaseID, tenantID, filter) {
         let records = await collection.deleteMany(filter);
 
         action.setCompleted()
-        return action
+        return action?.record || action
 
 
     } catch (err) {
         action.setFailed(String(err))
-        return action
+        return action?.record || action
     }
 
 

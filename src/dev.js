@@ -67,5 +67,51 @@ export async function test() {
 
 
 
-test()
-// testCollection()
+
+async function test2(){
+
+    let db = new MongoDB()
+    db.uri = URI
+
+    db.databaseID = "n8n"
+    db.tenantID = "test"
+
+
+    // init db
+    let a_init = await db.init()
+
+    if(a_init.isCompleted == false){
+        console.log('Error init')
+    }
+
+    let r
+
+    r = await db.search({"@type": "ItemList"})
+
+    console.log(JSON.stringify(r.result, null, 4))
+
+
+
+    let action = {
+        "@type": "AppendAction",
+        "toCollection": {"@id": "https://www.test.com/listRecord3"},
+        "object": {
+            "@type": "Thing",
+            "@id": "https://ww.test.com/thing12",
+            "name": "thing12"
+        }
+    }
+
+    await db.execute(action)
+
+
+    r = await db.search({"@type": "ItemList"})
+
+    console.log(JSON.stringify(r.result, null, 4))
+
+    return r
+
+}
+
+
+test2()
