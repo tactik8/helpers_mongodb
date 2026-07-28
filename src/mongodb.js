@@ -55,7 +55,7 @@ export class MongoDB {
         let initAction = await m.dbInit(this.uri)
         if (initAction.actionStatus == "CompletedActionStatus") {
             this._dbInitializedFlag = true
-            this._client = initAction.result?.[0]
+            this._client = initAction.result?.[0] || initAction.result
         }
 
         // init background healthcheck
