@@ -111,7 +111,7 @@ async function test2(){
 
 
     action = {
-        "@type": "DeleteAction",
+        "@type": "DupliacteAction",
         "toCollection": {"@id": "https://www.test.com/listRecord3"},
         "object": [{
             "@type": "Thing",
