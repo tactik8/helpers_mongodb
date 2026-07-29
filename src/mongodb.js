@@ -162,8 +162,8 @@ export async function executeMoveAction(client, databaseID, tenantID, actionReco
         return helpers.things.Action.setFailed(actionRecord, `No itemList provided`)
     }
 
-    let itemlistRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
-    itemlistRecord = itemlistRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
     // Retrieve item
     let listItem = helpers.getValue(actionRecord, "object")
@@ -192,8 +192,8 @@ export async function executeMoveUpAction(client, databaseID, tenantID, actionRe
         return helpers.things.Action.setFailed(actionRecord, `No itemList provided`)
     }
 
-    let itemlistRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
-    itemlistRecord = itemlistRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
     // Retrieve item
     let listItem = helpers.getValue(actionRecord, "object")
@@ -220,8 +220,8 @@ export async function executeMoveDownAction(client, databaseID, tenantID, action
         return helpers.things.Action.setFailed(actionRecord, `No itemList provided`)
     }
 
-    let itemlistRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
-    itemlistRecord = itemlistRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
     // Retrieve item
     let listItem = helpers.getValue(actionRecord, "object")

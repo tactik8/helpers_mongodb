@@ -120,8 +120,49 @@ async function test2(){
         }]
     }
 
-    let t = await db.execute(action)
+    let t
+     t = await db.execute(action)
     console.log('t', t)
+
+      action = {
+        "@type": "MoveUpAction",
+        "targetCollection": {"@id": "https://www.test.com/listRecord3"},
+        "object": [{
+            "@type": "Thing",
+            "@id": "https://ww.test.com/thing12",
+            "name": "thing12"
+        }]
+    }
+
+   t = await db.execute(action)
+    console.log('t', t)
+
+      action = {
+        "@type": "MoveDownAction",
+        "targetCollection": {"@id": "https://www.test.com/listRecord3"},
+        "object": [{
+            "@type": "Thing",
+            "@id": "https://ww.test.com/thing12",
+            "name": "thing12"
+        }]
+    }
+
+  t = await db.execute(action)
+    console.log('t', t)
+
+      action = {
+        "@type": "MoveAction",
+        "targetCollection": {"@id": "https://www.test.com/listRecord3"},
+        "toLocation": 0,
+        "object": [{
+            "@type": "Thing",
+            "@id": "https://ww.test.com/thing12",
+            "name": "thing12"
+        }]
+    }
+ t = await db.execute(action)
+    console.log('t', t)
+
 
 
     r = await db.get('https://www.test.com/listRecord3')
