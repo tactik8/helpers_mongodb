@@ -157,7 +157,7 @@ export async function executeMoveAction(client, databaseID, tenantID, actionReco
 
 
     // Retrieve itemList record
-    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
     if(!itemlist){
         return helpers.things.Action.setFailed(actionRecord, `No itemList provided`)
     }
@@ -187,7 +187,7 @@ export async function executeMoveUpAction(client, databaseID, tenantID, actionRe
 
 
     // Retrieve itemList record
-    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
     if(!itemlist){
         return helpers.things.Action.setFailed(actionRecord, `No itemList provided`)
     }
@@ -215,7 +215,7 @@ export async function executeMoveDownAction(client, databaseID, tenantID, action
 
 
     // Retrieve itemList record
-    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
     if(!itemlist){
         return helpers.things.Action.setFailed(actionRecord, `No itemList provided`)
     }
@@ -242,7 +242,7 @@ export async function executeAppendAction(client, databaseID, tenantID, actionRe
 
 
     // Retrieve itemList record
-    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
     let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
     itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
@@ -266,7 +266,7 @@ export async function executePrependAction(client, databaseID, tenantID, actionR
 
 
     // Retrieve itemList record
-    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
     let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
     itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
@@ -290,7 +290,7 @@ export async function executeInsertAction(client, databaseID, tenantID, actionRe
 
 
     // Retrieve itemList record
-    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
     let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
     itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
@@ -316,7 +316,7 @@ export async function executeDeleteAction(client, databaseID, tenantID, actionRe
 
 
     // Retrieve itemList record
-    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
     let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
     itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
@@ -344,7 +344,7 @@ export async function executeReplaceAction(client, databaseID, tenantID, actionR
 
 
     // Retrieve itemList record
-    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
     let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
     itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
@@ -370,7 +370,7 @@ export async function executeDuplicateAction(client, databaseID, tenantID, actio
 
 
     // Retrieve itemList record
-    let itemlist = helpers.getValue(actionRecord, "toCollection")
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
     let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
     itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
