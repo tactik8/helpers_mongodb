@@ -105,14 +105,14 @@ async function test2(){
     await db.execute(action)
 
 
-    r = await db.search({"@type": "ItemList"})
+    r = await db.get('https://www.test.com/listRecord3')
 
-    console.log(r.result.numberOfItems)
+    console.log('a'. r)
 
 
     action = {
-        "@type": "DupliacteAction",
-        "toCollection": {"@id": "https://www.test.com/listRecord3"},
+        "@type": "DuplicateAction",
+        "targetCollection": {"@id": "https://www.test.com/listRecord3"},
         "object": [{
             "@type": "Thing",
             "@id": "https://ww.test.com/thing12",
@@ -120,12 +120,14 @@ async function test2(){
         }]
     }
 
-    await db.execute(action)
+    let t = await db.execute(action)
+    console.log('t', t)
 
 
-    r = await db.search({"@type": "ItemList"})
+    r = await db.get('https://www.test.com/listRecord3')
 
-    console.log(r.result.numberOfItems)
+    console.log('ppp')
+    console.log('b', r)
 
 
 
