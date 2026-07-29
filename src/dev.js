@@ -21,7 +21,7 @@ export async function test() {
     // init db
     let a_init = await db.init()
 
-    if(a_init.isCompleted == false){
+    if (a_init.isCompleted == false) {
         console.log('Error init')
     }
 
@@ -68,7 +68,7 @@ export async function test() {
 
 
 
-async function test2(){
+async function test2() {
 
     let db = new MongoDB()
     db.uri = URI
@@ -80,95 +80,95 @@ async function test2(){
     // init db
     let a_init = await db.init()
 
-    if(a_init.isCompleted == false){
+    if (a_init.isCompleted == false) {
         console.log('Error init')
     }
 
     let r
 
-    r = await db.search({"@type": "ItemList"})
+
+    let baseRecord = helpers.records.ItemList(5)
+    baseRecord['@id'] = "https://www.test.com/testlist1#itemlist"
+    let record_id = helpers.record_id(baseRecord)
+
+    await db.post(baseRecord)
+
+
+    let itemRecord = baseRecord.itemListElement[3]
+    let itemRecord_id = helpers.record_id(itemRecord)
+
 
     //console.log(JSON.stringify(r.result, null, 4))
 
     let action
 
+    let items
+
     action = {
         "@type": "AppendAction",
-        "toCollection": {"@id": "https://www.test.com/listRecord3"},
+        "targetCollection": { "@id": record_id },
         "object": {
+            "@id": "thing_append",
             "@type": "Thing",
-            "@id": "https://ww.test.com/thing12",
-            "name": "thing12"
+            "name": "thing_append"
         }
     }
 
+
     await db.execute(action)
-
-
-    r = await db.get('https://www.test.com/listRecord3')
-
-    console.log('a'. r)
+    r = await db.get(record_id)
+    items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
+    console.log('append', items)
 
 
     action = {
         "@type": "DuplicateAction",
-        "targetCollection": {"@id": "https://www.test.com/listRecord3"},
-        "object": [{
-            "@type": "Thing",
-            "@id": "https://ww.test.com/thing12",
-            "name": "thing12"
-        }]
+        "targetCollection": { "@id": record_id },
+        "object": { "@id": itemRecord_id }
     }
 
-    let t
-     t = await db.execute(action)
-    console.log('t', t)
 
-      action = {
+    await db.execute(action)
+    r = await db.get(record_id)
+    items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
+    console.log('Duplicate', items)
+
+    action = {
         "@type": "MoveUpAction",
-        "targetCollection": {"@id": "https://www.test.com/listRecord3"},
-        "object": [{
-            "@type": "Thing",
-            "@id": "https://ww.test.com/thing12",
-            "name": "thing12"
-        }]
+        "targetCollection": { "@id": record_id },
+        "object": { "@id": itemRecord_id }
     }
 
-   t = await db.execute(action)
-    console.log('t', t)
+     await db.execute(action)
+    r = await db.get(record_id)
+    items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
+    console.log('MoveUp', items)
 
-      action = {
+    action = {
         "@type": "MoveDownAction",
-        "targetCollection": {"@id": "https://www.test.com/listRecord3"},
-        "object": [{
-            "@type": "Thing",
-            "@id": "https://ww.test.com/thing12",
-            "name": "thing12"
-        }]
+        "targetCollection": { "@id": record_id },
+        "object": { "@id": itemRecord_id }
     }
 
-  t = await db.execute(action)
-    console.log('t', t)
+     await db.execute(action)
+    r = await db.get(record_id)
+    items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
+    console.log('MoveDown', items)
 
-      action = {
+
+    action = {
         "@type": "MoveAction",
-        "targetCollection": {"@id": "https://www.test.com/listRecord3"},
         "toLocation": 0,
-        "object": [{
-            "@type": "Thing",
-            "@id": "https://ww.test.com/thing12",
-            "name": "thing12"
-        }]
+        "targetCollection": { "@id": record_id },
+        "object": { "@id": itemRecord_id }
     }
- t = await db.execute(action)
-    console.log('t', t)
+     await db.execute(action)
+    r = await db.get(record_id)
+    items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
+    console.log('Move', items)
 
 
 
-    r = await db.get('https://www.test.com/listRecord3')
-
-    console.log('ppp')
-    console.log('b', r)
 
 
 
