@@ -94,7 +94,7 @@ async function test2() {
     await db.post(baseRecord)
 
 
-    let itemRecord = baseRecord.itemListElement[3]
+    let itemRecord = baseRecord.itemListElement[2]
     let itemRecord_id = helpers.record_id(itemRecord)
 
 
@@ -115,11 +115,28 @@ async function test2() {
     }
 
 
+    action = {
+        "@type": "MoveAction",
+        "targetCollection": { "@id": record_id },
+        "object": { "@id": itemRecord_id },
+        "toLocation": 1
+    }
+
+     await db.execute(action)
+    r = await db.get(record_id)
+    items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
+    console.log('Move', items)
+
+
+    return
+
+
     await db.execute(action)
     r = await db.get(record_id)
     items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
     console.log('append', items)
 
+    
 
     action = {
         "@type": "DuplicateAction",
@@ -133,17 +150,9 @@ async function test2() {
     items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
     console.log('Duplicate', items)
 
-    action = {
-        "@type": "MoveUpAction",
-        "targetCollection": { "@id": record_id },
-        "object": { "@id": itemRecord_id }
-    }
+    
 
-     await db.execute(action)
-    r = await db.get(record_id)
-    items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
-    console.log('MoveUp', items)
-
+    return
     action = {
         "@type": "MoveDownAction",
         "targetCollection": { "@id": record_id },

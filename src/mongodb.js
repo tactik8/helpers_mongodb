@@ -125,6 +125,14 @@ export async function executeAction(client, databaseID, tenantID, actionRecord) 
         return await executeMoveDownAction(client, databaseID, tenantID, actionRecord)
     }
 
+    if (record_type == "MoveBeforeAction") {
+        return await executeMoveBeforeAction(client, databaseID, tenantID, actionRecord)
+    }
+
+    if (record_type == "MoveAfterAction") {
+        return await executeMoveAfterAction(client, databaseID, tenantID, actionRecord)
+    }
+
     if (record_type == "AppendAction") {
         return await executeAppendAction(client, databaseID, tenantID, actionRecord)
     }
@@ -166,14 +174,14 @@ export async function executeMoveAction(client, databaseID, tenantID, actionReco
     itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
 
     // Retrieve item
-    let listItem = helpers.getValue(actionRecord, "object")
+    let listItem = helpers.getValues(actionRecord, "object")
 
     // Retrieve position
     let position = helpers.getValue(actionRecord, 'toLocation')
 
     // helpers
     itemListRecord = helpers.ItemList.move(itemListRecord, listItem, position)
-
+     
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
@@ -237,6 +245,63 @@ export async function executeMoveDownAction(client, databaseID, tenantID, action
 
     return actionRecord
 }
+
+
+export async function executeMoveBeforeAction(client, databaseID, tenantID, actionRecord) {
+
+
+    // Retrieve itemList record
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
+    if(!itemlist){
+        return helpers.things.Action.setFailed(actionRecord, `No itemList provided`)
+    }
+
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
+
+    // Retrieve item
+    let listItem = helpers.getValue(actionRecord, "object")
+
+    // helpers
+    itemListRecord = helpers.ItemList.moveDown(itemListRecord, listItem)
+
+    // Save itemList
+    let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
+
+    // Complete action and return
+    actionRecord = helpers.Action.setCompleted(itemListRecord)
+
+    return actionRecord
+}
+
+
+export async function executeMoveAfterAction(client, databaseID, tenantID, actionRecord) {
+
+
+    // Retrieve itemList record
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
+    if(!itemlist){
+        return helpers.things.Action.setFailed(actionRecord, `No itemList provided`)
+    }
+
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
+
+    // Retrieve item
+    let listItem = helpers.getValue(actionRecord, "object")
+
+    // helpers
+    itemListRecord = helpers.ItemList.moveDown(itemListRecord, listItem)
+
+    // Save itemList
+    let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
+
+    // Complete action and return
+    actionRecord = helpers.Action.setCompleted(itemListRecord)
+
+    return actionRecord
+}
+
 
 export async function executeAppendAction(client, databaseID, tenantID, actionRecord) {
 
