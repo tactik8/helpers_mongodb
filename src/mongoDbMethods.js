@@ -469,14 +469,23 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
         // Clean records
         records = _cleanMongoRecord(records)
 
+        console.log('pp', records.length)
         // Expand
         if (expand == true) {
             records = await dbGetNested(client, databaseID, tenantID, records)
             records = records?.result || []
         }
 
+        let result = {
+            "@type": "ItemList",
+            "@id": "_:" + crypto.randomUUID(),
+            "name": "Search results"
+        }
 
-        action.setCompleted(records)
+        result = helpers.things.ItemList.add(result, records)
+
+
+        action.setCompleted(result)
         return action?.record || action
 
 

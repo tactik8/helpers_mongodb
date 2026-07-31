@@ -122,7 +122,7 @@ async function test2() {
         "toLocation": 1
     }
 
-     await db.execute(action)
+    await db.execute(action)
     r = await db.get(record_id)
     items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
     console.log('Move', items)
@@ -136,7 +136,7 @@ async function test2() {
     items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
     console.log('append', items)
 
-    
+
 
     action = {
         "@type": "DuplicateAction",
@@ -150,7 +150,7 @@ async function test2() {
     items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
     console.log('Duplicate', items)
 
-    
+
 
     return
     action = {
@@ -159,7 +159,7 @@ async function test2() {
         "object": { "@id": itemRecord_id }
     }
 
-     await db.execute(action)
+    await db.execute(action)
     r = await db.get(record_id)
     items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
     console.log('MoveDown', items)
@@ -171,7 +171,7 @@ async function test2() {
         "targetCollection": { "@id": record_id },
         "object": { "@id": itemRecord_id }
     }
-     await db.execute(action)
+    await db.execute(action)
     r = await db.get(record_id)
     items = r.result.itemListElement.map(x => x?.position + " - " + x?.item?.name)
     console.log('Move', items)
@@ -187,4 +187,31 @@ async function test2() {
 }
 
 
-test2()
+
+async function test3() {
+
+    let db = new MongoDB()
+    db.uri = URI
+
+    db.databaseID = "n8n"
+    db.tenantID = "test"
+
+
+    // init db
+    let a_init = await db.init()
+
+    if (a_init.isCompleted == false) {
+        console.log('Error init')
+    }
+
+
+    let filter = {"@type": "ItemList"}
+
+    let r = await db.search(filter)
+
+    console.log('zz', JSON.stringify(r, null, 4))
+
+}
+
+
+test3()
