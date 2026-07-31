@@ -431,7 +431,7 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
     let action = new helpers.Action('MongoDB Search', filter)
 
     tenantID = tenantID || 'test'
-    filter = filter || {}
+    filter = JSON.parse(JSON.stringify(filter || {}))
     orderBy = orderBy || "@id"
     orderDirection = orderDirection || 1
     offset = offset || 0
