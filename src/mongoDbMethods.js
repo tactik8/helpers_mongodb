@@ -476,7 +476,6 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
         // Clean records
         records = _cleanMongoRecord(records)
 
-        console.log('pp', records.length)
         // Expand
         if (expand == true) {
             records = await dbGetNested(client, databaseID, tenantID, records)
