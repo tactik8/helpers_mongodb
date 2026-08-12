@@ -366,7 +366,7 @@ export async function executeInsertAction(client, databaseID, tenantID, actionRe
     let location = helpers.getValue(actionRecord, "toLocation")
 
     // helpers
-    itemListRecord = helpers.ItemList.insert(itemListRecord, object, location)
+    itemListRecord = helpers.ItemList.insert(itemListRecord, objects, location)
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
