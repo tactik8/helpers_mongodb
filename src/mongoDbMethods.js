@@ -445,19 +445,14 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
     limit = limit || 100
 
 
-    try {
-        offset = Number(offset)
-    } catch {
-        offset = 0
-    }
+    
+    offset = Number(offset)
+    offset = isNaN(offset) ? 0 : offset
 
-
-    try {
-        limit = Number(limit)
-    } catch {
-        limit = 100
-    }
-
+    limit = Number(limit)
+    limit = isNaN(limit) ? 0 : limit
+   
+   
 
     for (let k of Object.keys(filter)) {
         filter['data.' + k] = filter[k]
@@ -473,6 +468,8 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
         ordering[orderBy] = orderDirection
         let records = await collection.find(filter).sort(ordering).skip(offset).limit(limit).toArray();
 
+        let count = await collection.find(filter).sort(ordering).skip(offset).limit(limit).estimatedDocumentCount();
+
         // Clean records
         records = _cleanMongoRecord(records)
 
@@ -485,11 +482,12 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
         let result = {
             "@type": "ItemList",
             "@id": "_:" + crypto.randomUUID(),
-            "name": "Search results"
+            "name": "Search results",
+            "numberOfItems": count
         }
 
         result = helpers.things.ItemList.add(result, records)
-
+        
 
         action.setCompleted(result)
         return action?.record || action
