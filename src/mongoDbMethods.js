@@ -441,8 +441,8 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
     filter = JSON.parse(JSON.stringify(filter || {}))
     orderBy = orderBy || "@id"
     orderDirection = orderDirection || 1
-    offset = offset || 0
-    limit = limit || 100
+    offset = offset ?? 0
+    limit = limit ?? 100
 
 
     
@@ -475,7 +475,8 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
         const collection = database.collection(tenantID);
 
         let ordering = {}
-        ordering[orderBy] = orderDirection
+        ordering["data." + orderBy] = orderDirection
+        ordering['_id'] = -1
         let records = await collection.find(filter).sort(ordering).skip(offset).limit(limit).toArray();
 
         let count = await collection.countDocuments(filter);

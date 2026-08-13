@@ -205,12 +205,16 @@ async function test3() {
     }
 
 
-    let filter = {"@type": "VideoObject"}
+    let filter = {"@type": "VideoObject", "keywords": ['Anal', 'Amateur']}
 
-    let r = await db.search(filter, undefined, undefined, 10, 20)
+    let r
+    r = await db.search(filter, undefined, undefined, 10, 0)
 
-    console.log('zz', JSON.stringify(r, null, 4))
-    console.log(r.result.numberOfItems)
+    console.log('zz',r.result.itemListElement[0].item.url)
+
+        r = await db.search(filter, undefined, undefined, 10, 10)
+
+    console.log('zz',r.result.itemListElement[0].item.url)
 
 }
 
