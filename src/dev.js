@@ -208,15 +208,15 @@ async function test3() {
     let filter = {"@type": "VideoObject", "keywords": ['Anal', 'Amateur']}
 
     let r
-    r = await db.search(filter, undefined, undefined, 10, 0)
+    r = await db.search(filter, undefined, undefined, 10, 15)
 
-    console.log('zz',r.result.itemListElement[0].item.url)
+    console.log('zz',r.result.itemListElement[0].item.contentUrl)
 
-        r = await db.search(filter, undefined, undefined, 10, 10)
+        r = await db.search(filter, undefined, undefined, 10, 40)
 
-    console.log('zz',r.result.itemListElement[0].item.url)
+    console.log('zz',r.result.itemListElement[0].item.contentUrl)
 
 }
 
 
-test3()
+// test3()
