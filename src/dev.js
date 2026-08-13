@@ -194,7 +194,7 @@ async function test3() {
     db.uri = URI
 
     db.databaseID = "n8n"
-    db.tenantID = "test"
+    db.tenantID = "stash"
 
 
     // init db
@@ -205,11 +205,12 @@ async function test3() {
     }
 
 
-    let filter = {"@type": "ItemList"}
+    let filter = {"@type": "VideoObject"}
 
-    let r = await db.search(filter)
+    let r = await db.search(filter, undefined, undefined, 10, 20)
 
     console.log('zz', JSON.stringify(r, null, 4))
+    console.log(r.result.numberOfItems)
 
 }
 

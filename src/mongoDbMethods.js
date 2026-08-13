@@ -468,7 +468,7 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
         ordering[orderBy] = orderDirection
         let records = await collection.find(filter).sort(ordering).skip(offset).limit(limit).toArray();
 
-        let count = await collection.find(filter).sort(ordering).skip(offset).limit(limit).estimatedDocumentCount();
+        let count = await collection.countDocuments(filter);
 
         // Clean records
         records = _cleanMongoRecord(records)
@@ -483,11 +483,23 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
             "@type": "ItemList",
             "@id": "_:" + crypto.randomUUID(),
             "name": "Search results",
-            "numberOfItems": count
+            "numberOfItems": count,
+            "itemListElement": []
         }
 
-        result = helpers.things.ItemList.add(result, records)
-        
+        for(let [i, r] of records.entries()){
+
+            let listItem = {
+                "@type": "ListItem",
+                "@id": "_: " + crypto.randomUUID(),
+                "position":  i + offset,
+                "item": r
+            }
+
+            result.itemListElement.push(listItem)
+        }
+
+       
 
         action.setCompleted(result)
         return action?.record || action
