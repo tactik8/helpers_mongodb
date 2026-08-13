@@ -453,11 +453,21 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
     limit = isNaN(limit) ? 0 : limit
    
    
+    // adjust for array
+    for (let k of Object.keys(filter)) {
+        let value = filter[k]
+        if(Array.isArray(value)){
+            filter[k] = { $all: value }
+        }
+    }
 
+    // Adjust for data.x
     for (let k of Object.keys(filter)) {
         filter['data.' + k] = filter[k]
         delete filter[k]
     }
+
+    
 
     try {
 
