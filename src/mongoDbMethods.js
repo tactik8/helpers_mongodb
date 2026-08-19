@@ -316,12 +316,14 @@ export async function dbGetNested(client, databaseID, tenantID, records) {
         while (toFetchIDs.length > 0) {
 
             let a = await dbGet(client, databaseID, tenantID, toFetchIDs, false)
+   
+            
             let dbRecords = a.result
             dbRecords = Array.isArray(dbRecords) ? dbRecords : [dbRecords]
             dbRecords = dbRecords.map(x => x?.record || x)
-
             // Add records to recordsDB
             recordsDB.post(dbRecords)
+
 
             // add ids to fetch to already fetched
             fetchedIDs = fetchedIDs.concat(toFetchIDs)
@@ -334,8 +336,9 @@ export async function dbGetNested(client, databaseID, tenantID, records) {
 
         }
 
-        let results = initialIDs.map(x => recordsDB.get(x))
 
+
+        let results = initialIDs.map(x => recordsDB.get(x))
 
         action.setCompleted(results)
         return action?.record || action
@@ -381,8 +384,8 @@ export async function dbInsert(client, databaseID, tenantID, records) {
     let queries = []
     for (let r of records) {
 
-     
- 
+
+
         let q = {
             updateOne: {
                 filter: { "data.@id": r?.['@id'] },
@@ -432,10 +435,10 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
 
     tenantID = tenantID || 'test'
 
-    if(typeof filter == 'string'){
-        try{
+    if (typeof filter == 'string') {
+        try {
             filter = JSON.parse(filter)
-        } catch {}
+        } catch { }
 
     }
     filter = JSON.parse(JSON.stringify(filter || {}))
@@ -445,18 +448,18 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
     limit = limit ?? 100
 
 
-    
+
     offset = Number(offset)
     offset = isNaN(offset) ? 0 : offset
 
     limit = Number(limit)
     limit = isNaN(limit) ? 0 : limit
-   
-   
+
+
     // adjust for array
     for (let k of Object.keys(filter)) {
         let value = filter[k]
-        if(Array.isArray(value)){
+        if (Array.isArray(value)) {
             filter[k] = { $all: value }
         }
     }
@@ -467,7 +470,7 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
         delete filter[k]
     }
 
-    
+
 
     try {
 
@@ -492,26 +495,26 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
 
         let result = {
             "@type": "ItemList",
-            "@id": "_:" + crypto.randomUUID(),
+            "@id": "_:" + helpers.randomUUID(),
             "name": "Search results",
             "numberOfItems": count,
             "itemListElement": []
         }
 
-        for(let [i, r] of records.entries()){
+        let results = []
+        for (let [i, r] of records.entries()) {
 
             let listItem = {
                 "@type": "ListItem",
-                "@id": "_: " + crypto.randomUUID(),
-                "position":  i + offset,
+                "@id": "_: " + helpers.randomUUID(),
+                "position": i + offset,
                 "item": r
             }
 
-            result.itemListElement.push(listItem)
+            results.push(listItem)
         }
 
-       
-
+        result.itemListElement = results
         action.setCompleted(result)
         return action?.record || action
 
@@ -560,7 +563,9 @@ export async function dbGet(client, databaseID, tenantID, record_ids, expand = t
             records = a?.result
         }
 
+
         action.setCompleted(records)
+
         return action?.record || action
 
 

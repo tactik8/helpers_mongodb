@@ -1,5 +1,5 @@
 import { MongoDB } from './mongodb.js'
-import  helpers from 'helpers_jsonld'
+import helpers from 'helpers_jsonld'
 
 let URI = 'mongodb://tactik8:Temp4now@192.168.2.243:27017/?authMechanism=DEFAULT'
 
@@ -15,7 +15,7 @@ export async function test() {
     db.uri = URI
 
     db.databaseID = "n8n"
-    db.tenantID = "test"
+    db.tenantID = "stash"
 
 
     // init db
@@ -205,18 +205,18 @@ async function test3() {
     }
 
 
-    let filter = {"@type": "VideoObject", "keywords": ['Anal', 'Amateur']}
+    let filter = { "@type": "VideoObject", "keywords": ['Anal', 'Amateur'] }
 
     let r
     r = await db.search(filter, undefined, undefined, 10, 15)
 
-    console.log('zz',r.result.itemListElement[0].item.contentUrl)
+    console.log('zz', r.result.itemListElement[0].item.contentUrl)
 
-        r = await db.search(filter, undefined, undefined, 10, 40)
+    r = await db.search(filter, undefined, undefined, 10, 40)
 
-    console.log('zz',r.result.itemListElement[0].item.contentUrl)
+    console.log('zz', r.result.itemListElement[0].item.contentUrl)
 
 }
 
 
-// test3()
+test3()
