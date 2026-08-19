@@ -1,4 +1,4 @@
-import * as helpers from 'helpers_jsonld'
+import helpers from 'helpers_jsonld'
 import { MongoClient } from 'mongodb'
 
 

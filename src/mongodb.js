@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb'
 
-import * as helpers from 'helpers_jsonld'
+import helpers from 'helpers_jsonld'
 
 
 import * as m from './mongoDbMethods.js'
