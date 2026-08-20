@@ -157,6 +157,10 @@ export async function executeAction(client, databaseID, tenantID, actionRecord) 
         return await executeDuplicateAction(client, databaseID, tenantID, actionRecord)
     }
 
+    if (record_type == "UpsertAction") {
+        return await executeUpsertAction(client, databaseID, tenantID, actionRecord)
+    }
+
 
 }
 
@@ -448,6 +452,35 @@ export async function executeDuplicateAction(client, databaseID, tenantID, actio
     }
 
     
+
+    // Save itemList
+    let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
+
+    // Complete action and return
+    actionRecord = helpers.Action.setCompleted(itemListRecord)
+
+    return actionRecord
+}
+
+export async function executeUpsertAction(client, databaseID, tenantID, actionRecord) {
+
+
+    // Retrieve itemList record
+    let itemlist = helpers.getValue(actionRecord, "targetCollection")
+    let itemListRecord = (await m.dbGet(client, databaseID, tenantID, itemlist))?.result 
+    itemListRecord = itemListRecord || {"@type": "ItemList", "@id": helpers.record_id(itemlist)}
+
+
+    // Get object
+    let objects = helpers.getValues(actionRecord, "object")
+    
+    // Check if already in list. If so replace, else add
+    
+    for(let object of objects){
+        
+        itemListRecord = helpers.things.ItemList.upsert(itemListRecord, object)
+    }
+
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
