@@ -204,17 +204,20 @@ async function test3() {
         console.log('Error init')
     }
 
+    let record_id = "https://www.test.com/newrecords#itemlist"
 
-    let filter = { "@type": "VideoObject", "keywords": ['Anal', 'Amateur'] }
+    let submitAction = {
+        "@type": "UpsertAction",
+        "targetCollection": {"@id": record_id},
+        "object": {
+            "@type": "Thing",
+            "@id": "abc123",
+            "name": "abc123"
+        }
+    }
 
-    let r
-    r = await db.search(filter, undefined, undefined, 10, 15)
+    await db.execute(submitAction)
 
-    console.log('zz', r.result.itemListElement[0].item.contentUrl)
-
-    r = await db.search(filter, undefined, undefined, 10, 40)
-
-    console.log('zz', r.result.itemListElement[0].item.contentUrl)
 
 }
 
