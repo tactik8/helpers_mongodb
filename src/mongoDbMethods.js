@@ -421,7 +421,7 @@ export async function dbInsert(client, databaseID, tenantID, records) {
         let collection = database.collection(tenantID);
         let r = await collection.bulkWrite(queries)
 
-        action.setCompleted(r)
+        action.setCompleted()
 
         let result = action?.record || action
 
