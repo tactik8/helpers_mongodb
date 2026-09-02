@@ -380,10 +380,7 @@ export async function dbInsert(client, databaseID, tenantID, records) {
 
     db.post(records)
 
-
     records = db.getRecords(false)
-
-
 
     records = records.map(x => x?.record || x)
 
@@ -421,7 +418,7 @@ export async function dbInsert(client, databaseID, tenantID, records) {
         let collection = database.collection(tenantID);
         let r = await collection.bulkWrite(queries)
 
-        action.setCompleted()
+        action.setCompleted(String(r))
 
         let result = action?.record || action
 
