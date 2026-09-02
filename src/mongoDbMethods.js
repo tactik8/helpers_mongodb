@@ -316,8 +316,8 @@ export async function dbGetNested(client, databaseID, tenantID, records) {
         while (toFetchIDs.length > 0) {
 
             let a = await dbGet(client, databaseID, tenantID, toFetchIDs, false)
-   
-            
+
+
             let dbRecords = a.result
             dbRecords = Array.isArray(dbRecords) ? dbRecords : [dbRecords]
             dbRecords = dbRecords.map(x => x?.record || x)
@@ -359,7 +359,14 @@ export async function dbInsert(client, databaseID, tenantID, records) {
 
 
     // init action
-    const r = structuredClone(records);
+    let r = records
+    try {
+        r = structuredClone(records);
+    } catch {
+        try {
+            r = JSON.parse(JSON.stringify(records))
+        } catch { }
+    }
 
     let action = new helpers.Action('MongoDB Insert', r)
 

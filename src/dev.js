@@ -208,7 +208,7 @@ async function test3() {
 
     let submitAction = {
         "@type": "UpsertAction",
-        "targetCollection": {"@id": record_id},
+        "targetCollection": { "@id": record_id },
         "object": {
             "@type": "Thing",
             "@id": "abc123",
@@ -222,4 +222,171 @@ async function test3() {
 }
 
 
-test3()
+
+
+async function test4() {
+
+    let r = {
+
+
+
+
+        "@context":
+            "https://schema.org/",
+
+
+
+
+        "@type":
+            "Thing",
+
+
+
+
+        "@id":
+            "https://www.test.com/thing1",
+
+
+
+
+        "name":
+            "thing1",
+
+
+
+
+        "url":
+            "https://www.test.com/thing/thing1",
+
+
+
+
+        "other":
+            [
+
+
+
+
+
+                {
+
+
+
+
+
+
+                    "@context":
+                        "https://schema.org/",
+
+
+
+
+
+
+                    "@type":
+                        "Thing",
+
+
+
+
+
+
+                    "@id":
+                        "https://www.test.com/thing11",
+
+
+
+
+
+
+                    "name":
+                        "thing1",
+
+
+
+
+
+
+                    "url":
+                        "https://www.test.com/thing/thing11"
+
+
+
+
+
+                },
+
+
+
+
+
+                {
+
+
+
+
+
+
+                    "@context":
+                        "https://schema.org/",
+
+
+
+
+
+
+                    "@type":
+                        "Thing",
+
+
+
+
+
+
+                    "@id":
+                        "https://www.test.com/thing12",
+
+
+
+
+
+
+                    "name":
+                        "thing1",
+
+
+
+
+
+
+                    "url": "https://www.test.com/thing/thing12"
+
+                }
+
+
+
+
+            ]
+
+
+
+    }
+
+     let db = new MongoDB()
+    db.uri = URI
+
+    db.databaseID = "n8n"
+    db.tenantID = "stash"
+
+
+    // init db
+    let a_init = await db.init()
+
+    if (a_init.isCompleted == false) {
+        console.log('Error init')
+    }
+
+    let t = await db.post(r)
+    console.log('t', t)
+}
+test4()
