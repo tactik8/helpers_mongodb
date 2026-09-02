@@ -422,11 +422,27 @@ export async function dbInsert(client, databaseID, tenantID, records) {
         let r = await collection.bulkWrite(queries)
 
         action.setCompleted(r)
-        return action?.record || action
+
+        let result = action?.record || action
+
+        try {
+            result = JSON.parse(JSON.stringify(result))
+        } catch {}
+
+        return result
 
     } catch (err) {
         action.setFailed(String(err))
-        return action?.record || action
+
+        let result = action?.record || action
+
+        try {
+            result = JSON.parse(JSON.stringify(result))
+        } catch {}
+
+        return result
+
+       
     }
 
 
