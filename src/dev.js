@@ -216,9 +216,9 @@ async function test3() {
         }
     }
 
-    await db.execute(submitAction)
+    let r = await db.execute(submitAction)
 
-
+    console.log('r', r)
 }
 
 

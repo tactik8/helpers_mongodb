@@ -27,6 +27,7 @@
   "dependencies": {
     "esbuild": "^0.28.2",
     "helpers_jsonld": "github:tactik8/helpers_jsonld",
+    "jest": "^30.5.1",
     "mongodb": "^7.2.0"
   }
 }
