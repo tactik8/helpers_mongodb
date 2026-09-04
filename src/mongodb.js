@@ -13,6 +13,7 @@ import * as m from './mongoDbMethods.js'
 // cloudflared access tcp --hostname mongodb.krknapi.com --url localhost:27018
 
 
+
 export class MongoDB {
     constructor(uri, tenantID, databaseID) {
 
@@ -103,6 +104,32 @@ export class MongoDB {
         return await executeAction(this._client, this.databaseID, this.tenantID, actionRecord)
     }
 
+    // static methods
+
+    static async getDB(uri, databaseID, tenantID){
+        return await getDB(uri, databaseID, tenantID)
+    }
+
+
+}
+
+
+
+
+
+let dbs = {}
+export async function getDB(uri, databaseID, tenantID){
+
+    let db = dbs?.[databaseID]?.[tenantID]
+
+    if(!db){
+        db = new MongoDB(uri, tenantID, databaseID)
+        await db.init()
+        dbs[databaseID] = dbs?.[databaseID] ?? {}
+        dbs[databaseID][tenantID] = db
+    }
+
+    return db
 }
 
 
