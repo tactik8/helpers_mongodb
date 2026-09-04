@@ -502,6 +502,8 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
         ordering['_id'] = -1
         let records = await collection.find(filter).sort(ordering).skip(offset).limit(limit).toArray();
 
+        
+
         let count = await collection.countDocuments(filter);
 
         // Clean records
@@ -522,6 +524,7 @@ export async function dbSearch(client, databaseID, tenantID, filter, orderBy, or
         }
 
         let results = []
+        records = Array.isArray(records) ? records : [records]
         for (let [i, r] of records.entries()) {
 
             let listItem = {
@@ -627,9 +630,6 @@ export async function dbDelete(client, databaseID, tenantID, filter) {
         action.setFailed(String(err))
         return action?.record || action
     }
-
-
-
 
 }
 
