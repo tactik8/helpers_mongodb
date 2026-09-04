@@ -618,6 +618,7 @@ export async function dbDelete(client, databaseID, tenantID, filter) {
 
         let records = await collection.deleteMany(filter);
 
+        action.object = filter
         action.setCompleted()
         return action?.record || action
 
