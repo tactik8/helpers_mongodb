@@ -305,9 +305,13 @@ export async function dbGetNested(client, databaseID, tenantID, records) {
 export async function dbPatch(client, databaseID, tenantID, records) {
     let action = new helpers.things.Action('MongoDB Patch', helpers.clone(records));
 
-    records = getFlatRecords(records);
 
-    let record_ids = records.map((x) => x?.['@id']);
+    let tempDB1 = new helpers.DB()
+    tempDB1.post(records)
+
+    records = tempDB1.records
+
+    let record_ids = records.map((x) => helpers.record_id(x));
 
     // Retrieve current db records
     let retrieveCurrentRecordsAction = await dbGet(
@@ -317,21 +321,25 @@ export async function dbPatch(client, databaseID, tenantID, records) {
         record_ids,
     );
     let currentRecords = retrieveCurrentRecordsAction?.result || [];
-    currentRecords = helpers.toArray(currentRecords);
 
-    // iterate
-    let mergedRecords = [];
-    for (let r of records) {
-        let currentRecord = currentRecords.find(
-            (x) => x?.['@id'] == r?.['@id'],
-        );
+    // Add current records to tempDB
+    let tempDB = new helpers.DB()
+    tempDB.post(currentRecords)
+    console.log('jj1', tempDB.records)
 
-        let mergedRecord = helpers.merge(r, currentRecord);
 
-        mergedRecords.push(mergedRecord);
-    }
+    // Patch new records to db
+    tempDB.patch(records)
 
-    let a = await dbInsert(client, databaseID, tenantID, mergedRecords);
+    console.log('jj', tempDB.records)
+
+    // Get updated records from tempDB
+    let patchedRecords = tempDB.records
+
+
+    //
+
+    let a = await dbInsert(client, databaseID, tenantID, patchedRecords);
 
     let updatedRecords = a?.result
 
@@ -375,7 +383,7 @@ export async function dbInsert(client, databaseID, tenantID, records) {
     for (let r of records) {
         let q = {
             updateOne: {
-                filter: { 'data.@id': r?.['@id'] },
+                filter: { 'data.@id': helpers.record_id(r) },
                 update: {
                     $set: {
                         '@type': helpers.record_type(r),
@@ -677,6 +685,8 @@ export async function dbGet(
     record_ids = Array.isArray(record_ids) ? record_ids : [record_ids];
 
     record_ids = record_ids.map((x) => x?.['@id'] || x);
+
+    record_ids = [ ...new Set(record_ids)]
 
     let query = record_ids.map((x) => {
         return { 'data.@id': x };

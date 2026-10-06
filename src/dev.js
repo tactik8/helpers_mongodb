@@ -24,14 +24,27 @@ async function test4() {
     },
   };
 
+   let record2 = {
+   
+    "@id": "https://www.test.com/thing1#thing",
+    name: "thing12",
+   
+  };
+
   let action = await db.post(record);
+  console.log('post', action)
 
   console.log('aaaa', action.result)
   //action = await db.appendItem(record, item)
 
 
-  let a = await db.related( {"@id": "https://www.test.com/thing2#thing"})
+  let a = await db.patch( record2)
 
+  console.log('patch', a)
+
+
+  let a3 = await db.get( "https://www.test.com/thing1#thing")
+  console.log('get', a3)
 
 
   console.log('a', JSON.stringify(a.result, null, 4))

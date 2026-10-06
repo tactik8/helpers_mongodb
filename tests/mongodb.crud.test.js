@@ -94,6 +94,7 @@ describe('JSON-LD Module Unit Tests (Integration style - No Mocks)', () => {
 
             // Get record, ensure values patched
             action = await db.get(record_id)
+            console.log('aa', action)
             expect(action?.result?.['@id']).toBe(record_id)
             expect(action?.result?.name).toBe(record?.name)
             expect(action?.result?.test).toBe(r?.test)
