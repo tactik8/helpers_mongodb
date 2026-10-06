@@ -96,6 +96,33 @@ export class MongoDB {
         return await m.dbSearch(this._client, this.databaseID, this.tenantID, filter, orderBy, orderDirection, limit, offset, true)
     }
 
+    /**
+     * Returns records where valueToSearch is a value of any property
+     * @param {*} valueToSearch 
+     * @param {*} orderBy 
+     * @param {*} orderDirection 
+     * @param {*} limit 
+     * @param {*} offset 
+     * @returns 
+     */
+    async contains(valueToSearch, orderBy, orderDirection, limit, offset) {
+        return await m.dbContains(this._client, this.databaseID, this.tenantID, valueToSearch, orderBy, orderDirection, limit, offset, true)
+    }
+
+    /**
+     * Returns records where record_ref is a value of any property
+     * @param {*} record_ref 
+     * @param {*} orderBy 
+     * @param {*} orderDirection 
+     * @param {*} limit 
+     * @param {*} offset 
+     * @returns 
+     */
+    async related(record_ref, orderBy, orderDirection, limit, offset) {
+        record_ref = { "@id": record_ref?.["@id"] || record_ref }
+        return await m.dbContains(this._client, this.databaseID, this.tenantID, record_ref, orderBy, orderDirection, limit, offset, true)
+    }
+
     async post(record) {
         return await m.dbInsert(this._client, this.databaseID, this.tenantID, record)
     }
@@ -204,7 +231,7 @@ export async function getDB(uri, databaseID, tenantID) {
 
 export async function closeDB(uri, databaseID, tenantID, client) {
 
-    let action = new helpers.Action('Closing database connection')
+    let action = new helpers.things.Action('Closing database connection')
 
     let m = await client.close()
 
@@ -299,13 +326,13 @@ export async function executeMoveAction(client, databaseID, tenantID, actionReco
     let position = helpers.getValue(actionRecord, 'toLocation')
 
     // helpers
-    itemListRecord = helpers.ItemList.move(itemListRecord, listItem, position)
+    itemListRecord = helpers.things.ItemList.move(itemListRecord, listItem, position)
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -326,13 +353,13 @@ export async function executeMoveUpAction(client, databaseID, tenantID, actionRe
     let listItem = helpers.getValue(actionRecord, "object")
 
     // helpers
-    itemListRecord = helpers.ItemList.moveUp(itemListRecord, listItem)
+    itemListRecord = helpers.things.ItemList.moveUp(itemListRecord, listItem)
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -354,13 +381,13 @@ export async function executeMoveDownAction(client, databaseID, tenantID, action
     let listItem = helpers.getValue(actionRecord, "object")
 
     // helpers
-    itemListRecord = helpers.ItemList.moveDown(itemListRecord, listItem)
+    itemListRecord = helpers.things.ItemList.moveDown(itemListRecord, listItem)
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -382,13 +409,13 @@ export async function executeMoveBeforeAction(client, databaseID, tenantID, acti
     let listItem = helpers.getValue(actionRecord, "object")
 
     // helpers
-    itemListRecord = helpers.ItemList.moveDown(itemListRecord, listItem)
+    itemListRecord = helpers.things.ItemList.moveDown(itemListRecord, listItem)
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -410,13 +437,13 @@ export async function executeMoveAfterAction(client, databaseID, tenantID, actio
     let listItem = helpers.getValue(actionRecord, "object")
 
     // helpers
-    itemListRecord = helpers.ItemList.moveDown(itemListRecord, listItem)
+    itemListRecord = helpers.things.ItemList.moveDown(itemListRecord, listItem)
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -435,14 +462,14 @@ export async function executeAppendAction(client, databaseID, tenantID, actionRe
 
 
     // helpers
-    itemListRecord = helpers.ItemList.append(itemListRecord, object)
+    itemListRecord = helpers.things.ItemList.append(itemListRecord, object)
 
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -460,13 +487,13 @@ export async function executePrependAction(client, databaseID, tenantID, actionR
     let object = helpers.getValues(actionRecord, "object")
 
     // helpers
-    itemListRecord = helpers.ItemList.prepend(itemListRecord, object)
+    itemListRecord = helpers.things.ItemList.prepend(itemListRecord, object)
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -487,13 +514,13 @@ export async function executeInsertAction(client, databaseID, tenantID, actionRe
     let location = helpers.getValue(actionRecord, "toLocation")
 
     // helpers
-    itemListRecord = helpers.ItemList.insert(itemListRecord, objects, location)
+    itemListRecord = helpers.things.ItemList.insert(itemListRecord, objects, location)
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -527,14 +554,14 @@ export async function executeDeleteAction(client, databaseID, tenantID, actionRe
     // Remove from list
     for (let i of objects) {
         let objectID = helpers.record_id(i)
-        itemListRecord = helpers.ItemList.delete(itemListRecord, objectID)
+        itemListRecord = helpers.things.ItemList.delete(itemListRecord, objectID)
     }
 
     // Save itemList to db
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -554,13 +581,13 @@ export async function executeReplaceAction(client, databaseID, tenantID, actionR
 
 
     // helpers
-    itemListRecord = helpers.ItemList.replace(itemListRecord, replacer, replacee)
+    itemListRecord = helpers.things.ItemList.replace(itemListRecord, replacer, replacee)
 
     // Save itemList
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -579,7 +606,7 @@ export async function executeDuplicateAction(client, databaseID, tenantID, actio
 
     for (let object of objects) {
         let objectID = helpers.record_id(object)
-        itemListRecord = helpers.ItemList.duplicate(itemListRecord, objectID)
+        itemListRecord = helpers.things.ItemList.duplicate(itemListRecord, objectID)
     }
 
 
@@ -588,7 +615,7 @@ export async function executeDuplicateAction(client, databaseID, tenantID, actio
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }
@@ -617,7 +644,7 @@ export async function executeUpsertAction(client, databaseID, tenantID, actionRe
     let r = await m.dbInsert(client, databaseID, tenantID, itemListRecord)
 
     // Complete action and return
-    actionRecord = helpers.Action.setCompleted(actionRecord, itemListRecord)
+    actionRecord = helpers.things.Action.setCompleted(actionRecord, itemListRecord)
 
     return actionRecord
 }

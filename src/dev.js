@@ -1,70 +1,39 @@
-import { MongoDB } from './mongodb.js'
-import helpers from 'helpers_jsonld'
+import { MongoDB } from "./mongodb.js";
+import helpers from "helpers_jsonld";
 
-let URI = 'mongodb://tactik8:Temp4now@192.168.2.243:27017/?authMechanism=DEFAULT'
-
-
-
+let URI =
+  "mongodb://tactik8:Temp4now@192.168.2.243:27017/?authMechanism=DEFAULT";
 
 async function test4() {
+  let URI =
+    "mongodb://tactik8:Temp4now@192.168.2.243:27017/?authMechanism=DEFAULT";
+
+  let databaseID = "unitTestlibraryHelpers";
+  let tenantID = "unitTestlibraryHelpersTenant0";
+
+  let db = await MongoDB.getDB(URI, databaseID, tenantID);
+
+  let record = {
+    "@type": "Thing",
+    "@id": "https://www.test.com/thing1#thing",
+    name: "thing1",
+    other: {
+      "@type": "ItemList",
+      "@id": "https://www.test.com/thing2#thing",
+      name: "thing2",
+    },
+  };
+
+  let action = await db.post(record);
+
+  console.log('aaaa', action.result)
+  //action = await db.appendItem(record, item)
 
 
-    let URI = 'mongodb://tactik8:Temp4now@192.168.2.243:27017/?authMechanism=DEFAULT'
-
-    let databaseID = "unitTestlibraryHelpers"
-    let tenantID = "unitTestlibraryHelpersTenant0"
-
-    let db = await MongoDB.getDB(URI, databaseID, tenantID)
-
-
-    let record = {
-        "@type": "ItemList",
-        "@id": "https://www.test.com/itemlist1#itemlist",
-        "name": "itemlist1",
-        "itemListElement": []
-    }
-    let record_id = record?.["@id"]
-
-
-    let item = {
-        "@type": "Thing",
-        "@id": "https://www.test.com/thingitem1#thing",
-        "name": "thingitem1"
-    }
-
-
-    let action
-
-
-    record.itemListElement = {
-        "@type": "ListItem",
-        "@id": "Someif",
-        "item": item
-    }
-
-
-    action = await db.post(record)
-
-    //action = await db.appendItem(record, item)
-
-    console.log('t', JSON.stringify(action, null, 4))
+  let a = await db.related( {"@id": "https://www.test.com/thing2#thing"})
 
 
 
-
-
-    let a = {
-        "@type": "DeleteAction",
-        "targetCollection": {
-            "@id": "https://www.test.com/itemlist44@itemlist"
-        },
-        "object": {
-            "@id": "https://www.test.com/thing1#thing"
-        }
-
-    }
-
-    let r = await db.execute(a)
-
+  console.log('a', JSON.stringify(a.result, null, 4))
 }
-test4()
+test4();
